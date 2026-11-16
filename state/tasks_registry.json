@@ -1,6 +1,6 @@
 {
   "project": "moaz76943-creator/focus-studio-pro",
-  "current_stage": 3,
+  "current_stage": 5,
   "total_stages": 10,
   "tasks": [
     {
@@ -21,17 +21,17 @@
     {
       "id": "S4",
       "title": "Native Android TTS engine & per-language voice discovery",
-      "status": "IN_PROGRESS"
+      "status": "COMPLETED"
     },
     {
       "id": "S5",
       "title": "Royalty-free procedural audio engine & Focus timer",
-      "status": "PENDING"
+      "status": "COMPLETED"
     },
     {
       "id": "S6",
       "title": "Tasks, Calendar, Notes, Analytics & 10 Studios (120Hz)",
-      "status": "PENDING"
+      "status": "IN_PROGRESS"
     },
     {
       "id": "S7",
