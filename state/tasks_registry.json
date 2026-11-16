@@ -1,6 +1,6 @@
 {
   "project": "moaz76943-creator/focus-studio-pro",
-  "current_stage": 5,
+  "current_stage": 6,
   "total_stages": 10,
   "tasks": [
     {
@@ -31,12 +31,12 @@
     {
       "id": "S6",
       "title": "Tasks, Calendar, Notes, Analytics & 10 Studios (120Hz)",
-      "status": "IN_PROGRESS"
+      "status": "COMPLETED"
     },
     {
       "id": "S7",
       "title": "Languages batch 1 (1-35) full UI coverage & QA",
-      "status": "PENDING"
+      "status": "IN_PROGRESS"
     },
     {
       "id": "S8",

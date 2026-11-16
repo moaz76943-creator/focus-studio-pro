@@ -1,5 +1,5 @@
 {
-  "stage": 5,
-  "status": "READY_FOR_STAGE_6",
-  "next_task": "S6"
+  "stage": 6,
+  "status": "READY_FOR_STAGE_7",
+  "next_task": "S7"
 }
