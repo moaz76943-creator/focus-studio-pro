@@ -1,0 +1,17 @@
+{
+  "project": "moaz76943-creator/focus-studio-pro",
+  "current_stage": 1,
+  "total_stages": 10,
+  "tasks": [
+    {"id": "S1", "title": "Clean public repo, structure & security gates", "status": "COMPLETED"},
+    {"id": "S2", "title": "Android 15 WindowInsets, SQLite migrations & AES backup", "status": "PENDING"},
+    {"id": "S3", "title": "FSRS-4.5 flashcards engine & flexible templates", "status": "PENDING"},
+    {"id": "S4", "title": "Native Android TTS engine & per-language voice discovery", "status": "PENDING"},
+    {"id": "S5", "title": "Royalty-free procedural audio engine & Focus timer", "status": "PENDING"},
+    {"id": "S6", "title": "Tasks, Calendar, Notes, Analytics & 10 Studios (120Hz)", "status": "PENDING"},
+    {"id": "S7", "title": "Languages batch 1 (1-35) full UI coverage & QA", "status": "PENDING"},
+    {"id": "S8", "title": "Languages batch 2 (36-70) full UI coverage & QA", "status": "PENDING"},
+    {"id": "S9", "title": "Languages batch 3 (71-100, no Hebrew, Western digits) & RTL/LTR QA", "status": "PENDING"},
+    {"id": "S10", "title": "Full acceptance tests & Play-ready AAB + APK build", "status": "PENDING"}
+  ]
+}
