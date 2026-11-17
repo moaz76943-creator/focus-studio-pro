@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:path/path.dart' as p;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:focus_studio_pro/core/storage/app_database.dart';
@@ -12,10 +14,15 @@ void main() {
   sqfliteFfiInit();
 
   test('SelfHealingGuardian detects and repairs corrupted card FSRS state non-destructively', () async {
+    final tempDirectory = await Directory.systemTemp.createTemp('focus_studio_pro_stage12_');
     final db = await AppDatabase.open(
       factory: databaseFactoryFfi,
-      customPath: inMemoryDatabasePath,
+      customPath: p.join(tempDirectory.path, 'guardian.db'),
     );
+    addTearDown(() async {
+      await db.close();
+      await tempDirectory.delete(recursive: true);
+    });
     final now = DateTime.now().toUtc().toIso8601String();
 
     await db.upsertDeck({

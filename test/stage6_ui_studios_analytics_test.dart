@@ -40,6 +40,15 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('nature_sounds_header')), findsOneWidget);
+    final soundsScrollable = find.ancestor(
+      of: find.byKey(const Key('nature_sounds_header')),
+      matching: find.byType(Scrollable),
+    );
+    await tester.scrollUntilVisible(
+      find.byKey(const Key('spatial_audio_expansion')),
+      300,
+      scrollable: soundsScrollable.first,
+    );
     expect(find.byKey(const Key('spatial_audio_expansion')), findsOneWidget);
   });
 }
