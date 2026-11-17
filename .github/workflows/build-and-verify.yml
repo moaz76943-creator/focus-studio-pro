@@ -1,8 +1,6 @@
 name: Verify and Build Debug APK
 
 on:
-  push:
-    branches: ["main", "repair/debug-apk-ci-20261117"]
   pull_request:
     branches: ["main"]
   workflow_dispatch:
@@ -11,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: debug-apk-${{ github.event.pull_request.number || github.ref }}-${{ github.sha }}
+  group: debug-apk-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:
