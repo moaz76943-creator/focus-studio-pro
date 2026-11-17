@@ -1,6 +1,6 @@
 {
   "project": "moaz76943-creator/focus-studio-pro",
-  "current_stage": 12,
+  "current_stage": 10,
   "total_stages": 12,
   "tasks": [
     {
@@ -50,8 +50,8 @@
     },
     {
       "id": "S10",
-      "title": "Full acceptance tests & Play-ready AAB + APK build",
-      "status": "COMPLETED"
+      "title": "Acceptance tests & installable Debug APK verification",
+      "status": "IN_PROGRESS"
     },
     {
       "id": "S11",
