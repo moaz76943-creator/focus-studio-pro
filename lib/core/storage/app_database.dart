@@ -15,6 +15,33 @@ class AppDatabase {
     await (_db as Database).close();
   }
 
+  static Future<void> _upsertRow(
+    DatabaseExecutor executor,
+    String table,
+    String primaryKey,
+    Map<String, Object?> row,
+  ) async {
+    final key = row[primaryKey];
+    if (key == null) {
+      throw FormatException('Missing primary key $primaryKey for table $table.');
+    }
+    final updated = await executor.update(
+      table,
+      row,
+      where: '$primaryKey = ?',
+      whereArgs: [key],
+    );
+    if (updated == 0) {
+      await executor.insert(table, row);
+    }
+  }
+
+  Future<void> _upsertById(String table, Map<String, Object?> row) async {
+    await (_db as Database).transaction((txn) async {
+      await _upsertRow(txn, table, 'id', row);
+    });
+  }
+
   static Future<AppDatabase> open({DatabaseFactory? factory, String? customPath}) async {
     final dbFactory = factory ?? databaseFactory;
     final String path;
@@ -180,58 +207,56 @@ class AppDatabase {
     Map<String, String> renamedFieldsMap = const {},
   }) async {
     final now = DateTime.now().toUtc().toIso8601String();
-    await _db.insert(
-      'card_templates',
-      {
+    await (_db as Database).transaction((txn) async {
+      await _upsertRow(txn, 'card_templates', 'id', {
         'id': templateId,
         'name': name,
         'fields_json': jsonEncode(fields),
         'question_side_fields_json': jsonEncode(questionSideFields),
         'answer_side_fields_json': jsonEncode(answerSideFields),
         'updated_at_utc': now,
-      },
-      conflictAlgorithm: ConflictAlgorithm.update,
-    );
+      });
 
-    if (renamedFieldsMap.isNotEmpty) {
-      final existingCards = await _db.query(
-        'cards',
-        where: 'template_id = ?',
-        whereArgs: [templateId],
-      );
-      for (final row in existingCards) {
-        final Map<String, dynamic> fieldsMap =
-            jsonDecode(row['fields_map_json'] as String) as Map<String, dynamic>;
-        final Map<String, dynamic> preservedMap =
-            jsonDecode(row['preserved_extra_fields_json'] as String) as Map<String, dynamic>;
-
-        renamedFieldsMap.forEach((oldKey, newKey) {
-          if (fieldsMap.containsKey(oldKey)) {
-            preservedMap[oldKey] = fieldsMap[oldKey];
-            fieldsMap[newKey] = fieldsMap[oldKey];
-          }
-        });
-
-        await _db.update(
+      if (renamedFieldsMap.isNotEmpty) {
+        final existingCards = await txn.query(
           'cards',
-          {
-            'fields_map_json': jsonEncode(fieldsMap),
-            'preserved_extra_fields_json': jsonEncode(preservedMap),
-            'updated_at_utc': now,
-          },
-          where: 'id = ?',
-          whereArgs: [row['id']],
+          where: 'template_id = ?',
+          whereArgs: [templateId],
         );
+        for (final row in existingCards) {
+          final Map<String, dynamic> fieldsMap =
+              jsonDecode(row['fields_map_json'] as String) as Map<String, dynamic>;
+          final Map<String, dynamic> preservedMap =
+              jsonDecode(row['preserved_extra_fields_json'] as String) as Map<String, dynamic>;
+
+          renamedFieldsMap.forEach((oldKey, newKey) {
+            if (fieldsMap.containsKey(oldKey)) {
+              preservedMap[oldKey] = fieldsMap[oldKey];
+              fieldsMap[newKey] = fieldsMap[oldKey];
+            }
+          });
+
+          await txn.update(
+            'cards',
+            {
+              'fields_map_json': jsonEncode(fieldsMap),
+              'preserved_extra_fields_json': jsonEncode(preservedMap),
+              'updated_at_utc': now,
+            },
+            where: 'id = ?',
+            whereArgs: [row['id']],
+          );
+        }
       }
-    }
+    });
   }
 
   Future<void> upsertDeck(Map<String, Object?> deckRow) async {
-    await _db.insert('decks', deckRow, conflictAlgorithm: ConflictAlgorithm.update);
+    await _upsertById('decks', deckRow);
   }
 
   Future<void> upsertCard(Map<String, Object?> cardRow) async {
-    await _db.insert('cards', cardRow, conflictAlgorithm: ConflictAlgorithm.update);
+    await _upsertById('cards', cardRow);
   }
 
   Future<void> insertReviewLog(Map<String, Object?> logRow) async {
@@ -276,10 +301,24 @@ class AppDatabase {
             if (item is! Map) {
               throw FormatException('Invalid row in table $table');
             }
-            await txn.insert(
+            const primaryKeys = {
+              'decks': 'id',
+              'card_templates': 'id',
+              'cards': 'id',
+              'review_logs': 'event_id',
+              'tts_preferences': 'language_code',
+              'focus_sessions': 'id',
+              'tasks_items': 'id',
+            };
+            final primaryKey = primaryKeys[table];
+            if (primaryKey == null) {
+              throw FormatException('No primary key registered for table $table');
+            }
+            await _upsertRow(
+              txn,
               table,
+              primaryKey,
               Map<String, Object?>.from(item),
-              conflictAlgorithm: ConflictAlgorithm.update,
             );
           }
         }
