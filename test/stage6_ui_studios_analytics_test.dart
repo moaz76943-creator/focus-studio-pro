@@ -40,7 +40,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('nature_sounds_header')), findsOneWidget);
-    final soundsScrollable = find.descendant(
+    final soundsScrollable = find.ancestor(
       of: find.byKey(const Key('nature_sounds_header')),
       matching: find.byType(Scrollable),
     );
