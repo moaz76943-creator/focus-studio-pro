@@ -1,10 +1,6 @@
 # Engineering Report — focus-studio-pro
 - **Completed:**
-  - `S1`: Clean public repository, modular directories, provenance policy, and Gitleaks gate.
-  - `S2`: Android 15 `WindowInsetsCompat.Type.systemBars()` & 120Hz `MainActivity.java` + Native Android TTS bridge, non-destructive SQLite migration engine (`app_database.dart`), AES-256-GCM encrypted backup + CSV/TSV/JSON preview/rollback (`backup_service.dart`).
-  - `S3`: Deterministic `FSRS-4.5` scheduling engine (`fsrs_engine.dart`), customizable field specs, Arabic diacritic-insensitive search & duplicate detection (`flashcard_manager.dart`).
-  - `S4`: Native Android TTS Dart abstraction (`native_tts_service.dart`) with real device engine/voice discovery, male/female filtering, `0.5x..2.0x` speed, `1..9` repeat, per-field controls, and fallback recovery.
-  - `S5`: 100% Royalty-Free, zero-hiss procedural audio synthesizer (`procedural_sound_engine.dart`) with DC-blocker & cosine envelopes (strictly zero auto-play), Focus Timer controller (`focus_timer_controller.dart`).
-  - `S6`: Full 120Hz UI shell (`main.dart`) with Nature Sounds at the very top of Sounds tab, collapsible 3D Spatial Audio, non-overlapping header Studios button for all 10 Studios (`studios_catalog.dart`), 30-day workload forecast & heatmap (`analytics_engine.dart`), and Stage 6 widget/unit tests.
-- **Active / Next:** `S7` (Languages batch 1: languages 1–35 full UI localization & QA verifier)
+  - `S1`–`S6`: Clean repo, Android 15 systemBars & 120Hz shell, Native TTS bridge, SQLite migrations, AES-256-GCM backup, FSRS-4.5 engine, zero-hiss procedural audio, and 10 Studios UI.
+  - `S7`: Authoritative 100-language registry (`locales/registry_100.json`, strictly excluding Hebrew), `LanguageRegistry100` QA engine (`language_registry_100.dart`), complete 42-key UI localization packs for **Languages 1–35** (`ar`, `en`, `de`, `fr`, `es`, `it`, `pt`, `ru`, `tr`, `nl`, `pl`, `sv`, `no`, `da`, `fi`, `el`, `cs`, `hu`, `ro`, `bg`, `uk`, `hr`, `sr`, `sk`, `sl`, `lt`, `lv`, `et`, `zh`, `ja`, `ko`, `hi`, `bn`, `ur`, `fa`), and Stage 7 verification suite.
+- **Active / Next:** `S8` (Languages batch 2: languages 36–70 full UI localization & QA)
 - **Security Findings:** 0 (clean history)
