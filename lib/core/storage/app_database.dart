@@ -10,6 +10,11 @@ class AppDatabase {
 
   AppDatabase._(this._db);
 
+  /// Closes this database connection. Call from tests and application shutdown paths.
+  Future<void> close() async {
+    await (_db as Database).close();
+  }
+
   static Future<AppDatabase> open({DatabaseFactory? factory, String? customPath}) async {
     final dbFactory = factory ?? databaseFactory;
     final String path;
@@ -185,7 +190,7 @@ class AppDatabase {
         'answer_side_fields_json': jsonEncode(answerSideFields),
         'updated_at_utc': now,
       },
-      conflictAlgorithm: ConflictAlgorithm.replace,
+      conflictAlgorithm: ConflictAlgorithm.update,
     );
 
     if (renamedFieldsMap.isNotEmpty) {
@@ -222,11 +227,11 @@ class AppDatabase {
   }
 
   Future<void> upsertDeck(Map<String, Object?> deckRow) async {
-    await _db.insert('decks', deckRow, conflictAlgorithm: ConflictAlgorithm.replace);
+    await _db.insert('decks', deckRow, conflictAlgorithm: ConflictAlgorithm.update);
   }
 
   Future<void> upsertCard(Map<String, Object?> cardRow) async {
-    await _db.insert('cards', cardRow, conflictAlgorithm: ConflictAlgorithm.replace);
+    await _db.insert('cards', cardRow, conflictAlgorithm: ConflictAlgorithm.update);
   }
 
   Future<void> insertReviewLog(Map<String, Object?> logRow) async {
@@ -251,6 +256,8 @@ class AppDatabase {
     };
   }
 
+  /// Merges snapshot rows atomically. Existing rows are updated in place, preserving
+  /// foreign-key relationships; rows absent from the snapshot are not deleted.
   Future<void> restoreSnapshotAtomically(Map<String, dynamic> snapshot) async {
     final db = _db as Database;
     await db.transaction((txn) async {
@@ -272,7 +279,7 @@ class AppDatabase {
             await txn.insert(
               table,
               Map<String, Object?>.from(item),
-              conflictAlgorithm: ConflictAlgorithm.replace,
+              conflictAlgorithm: ConflictAlgorithm.update,
             );
           }
         }
