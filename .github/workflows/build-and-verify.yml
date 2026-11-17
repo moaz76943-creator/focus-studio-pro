@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: debug-apk-${{ github.event.pull_request.number || github.ref }}
+  group: debug-apk-${{ github.sha }}
   cancel-in-progress: false
 
 jobs:
