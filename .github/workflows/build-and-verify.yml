@@ -1,0 +1,90 @@
+name: Build Production AAB & APK + Full QA Shield
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-verify-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify_and_build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run Gitleaks Secret Scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Run Pre-Commit & 100-Language Integrity Shield
+        run: python3 tools/pre_commit_shield.py
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Install Linux SQLite FFI dependencies for unit tests
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-0 libsqlite3-dev
+
+      - name: Set up Flutter Stable
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+          cache: true
+
+      - name: Bootstrap missing Flutter platform scaffolding (if any) without overwriting custom files
+        run: |
+          cp pubspec.yaml /tmp/pubspec.yaml.bak
+          cp lib/main.dart /tmp/main.dart.bak
+          cp android/app/src/main/java/com/moaz/focusstudiopro/MainActivity.java /tmp/MainActivity.java.bak
+          cp android/app/src/main/AndroidManifest.xml /tmp/AndroidManifest.xml.bak
+          cp android/app/build.gradle /tmp/app_build.gradle.bak
+          flutter create --org com.moaz --project-name focus_studio_pro --platforms=android .
+          cp /tmp/pubspec.yaml.bak pubspec.yaml
+          cp /tmp/main.dart.bak lib/main.dart
+          mkdir -p android/app/src/main/java/com/moaz/focusstudiopro
+          cp /tmp/MainActivity.java.bak android/app/src/main/java/com/moaz/focusstudiopro/MainActivity.java
+          cp /tmp/AndroidManifest.xml.bak android/app/src/main/AndroidManifest.xml
+          cp /tmp/app_build.gradle.bak android/app/build.gradle
+          rm -f android/app/src/main/kotlin/com/moaz/focus_studio_pro/MainActivity.kt || true
+          rm -f test/widget_test.dart || true
+
+      - name: Install Dart/Flutter dependencies
+        run: flutter pub get
+
+      - name: Run Full Automated Test Suite (Storage, AES Backup, FSRS-4.5, TTS, Audio, UI, 100 Languages, Shield)
+        run: flutter test
+
+      - name: Build Release APK & Play Store AAB
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
+
+      - name: Upload Release APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-studio-pro-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+
+      - name: Upload Play Store AAB Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-studio-pro-aab
+          path: build/app/outputs/bundle/release/app-release.aab
+          if-no-files-found: error
