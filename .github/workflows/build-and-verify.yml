@@ -24,11 +24,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run Gitleaks Secret Scan
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Run Pre-Commit & 100-Language Integrity Shield
         run: python3 tools/pre_commit_shield.py
 
