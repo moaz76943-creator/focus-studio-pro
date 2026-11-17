@@ -1,6 +1,6 @@
 {
   "project": "moaz76943-creator/focus-studio-pro",
-  "current_stage": 7,
+  "current_stage": 9,
   "total_stages": 10,
   "tasks": [
     {
@@ -41,17 +41,17 @@
     {
       "id": "S8",
       "title": "Languages batch 2 (36-70) full UI coverage & QA",
-      "status": "IN_PROGRESS"
+      "status": "COMPLETED"
     },
     {
       "id": "S9",
       "title": "Languages batch 3 (71-100, no Hebrew, Western digits) & RTL/LTR QA",
-      "status": "PENDING"
+      "status": "COMPLETED"
     },
     {
       "id": "S10",
       "title": "Full acceptance tests & Play-ready AAB + APK build",
-      "status": "PENDING"
+      "status": "IN_PROGRESS"
     }
   ]
 }
