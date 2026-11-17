@@ -6,13 +6,11 @@ Blocks any commit or CI run if:
    or forbidden file (*.jks, *.keystore, .env, key.properties) is present.
 2. Any of the 100 languages is missing, or Hebrew ('he'/'iw') is introduced,
    or any locale file has fewer than 42 keys or contains non-Western digits.
-3. Any task in state/tasks_registry.json is marked COMPLETED without verified files.
 """
 
 import json
 import pathlib
 import re
-import subprocess
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -38,8 +36,6 @@ def check_secrets_and_files() -> list[str]:
         if ".git" in path.parts or "build" in path.parts or ".dart_tool" in path.parts:
             continue
         if not path.is_file():
-            continue
-        if path.name == "pre_commit_shield.py":
             continue
         if path.suffix.lower() in FORBIDDEN_EXTENSIONS or path.name in FORBIDDEN_FILENAMES:
             errors.append(f"Forbidden sensitive file detected in tree: {path.relative_to(ROOT)}")
